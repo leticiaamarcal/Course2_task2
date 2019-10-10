@@ -24,7 +24,7 @@ inTrain <- createDataPartition(y = Sonar$Class, p = .75, list = FALSE)
 #ver estrutura
 str(inTrain)
 
-#criar train e set
+#criar train e test
 training <- Sonar[ inTrain,]
 testing  <- Sonar[-inTrain,]
 
@@ -42,7 +42,7 @@ plsFit <- train(Class ~ .,
                 preProc = c("center", "scale"),
                 tuneLength = 15)                  
 
-#otimizar o modelo fazendo cross-validation
+#fazer cross-validation fora da fórmula geral e adicionar nela depois
 ctrl <- trainControl(method = "repeatedcv", repeats = 3)
 
 #adicionando parâmetros
