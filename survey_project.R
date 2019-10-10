@@ -269,3 +269,322 @@ confusionMatrix(testing$brand, Predi_Test_C5TM_sa_age_zip_cred_car_e)
 #Kappa : 0.833   
 
 
+#o modelo com salary e age tem a melhor métrica
+
+#####
+
+#treinar modelo de Random Forest
+
+#set the seed
+set.seed(123)
+
+#fazer o grid manualmente para a Random Forest
+mtry <- expand.grid(mtry = c(1,2,3,4,5))
+
+#train the model RF
+RFmodel <- train(brand ~ salary + age,
+                                    data = training,
+                                    method = "rf",
+                                    preProc = c("center", "scale"),
+                                    tuneGrid = mtry,
+                                    trControl = crossV)
+
+#checar métrica
+RFmodel
+
+#resultado
+# mtry  Accuracy    Kappa    
+#  1     0.9141840  0.8179869
+#  2     0.9046068  0.7972071
+#  3     0.9044045  0.7967180
+#  4     0.9043240  0.7965648
+#  5     0.9047009  0.7974074
+
+#Treinar de novo com o mtry=1 já que é o que tem melhor métrica
+
+#set seed
+set.seed(123)
+
+#fazer o grid manualmente para a Random Forest
+mtry <- expand.grid(mtry = 1)
+
+#train the model RF
+RFmodel <- train(brand ~ salary + age,
+                                    data = training,
+                                    method = "rf",
+                                    preProc = c("center", "scale"),
+                                    tuneGrid = mtry,
+                                    trControl = crossV)
+
+#ver métrica
+RFmodel
+
+#resultado
+#Accuracy: 0.9142108
+#Kappa: 0.8180133
+
+#predictions com o test
+Predi_Test_RFmodel <- predict(RFmodel, testing)
+
+#ver a accuracy no test
+confusionMatrix(testing$brand, Predi_Test_RFmodel)
+
+#resultado no test
+#Accuracy : 0.9212 
+#Kappa : 0.8337 
+
+#####
+
+#agora vou treinar o SVM
+
+#set seed
+set.seed(123)
+
+#fazer o grid manualmente para a SVM
+NofC <- expand.grid(C=0.02)
+
+#train the model SVM
+SVMmodel <- train(brand ~ salary + age,
+                                    data = training,
+                                    method = "svmLinear",
+                                    preProc = c("center", "scale"),
+                                    tuneGrid = NofC,
+                                    trControl = crossV)
+
+#ver as métricas
+SVMmodel
+
+#resultado
+#Accuracy: 0.6217673
+#Kappa: 0
+
+#vou tentar com o tune automatico
+
+#set seed
+set.seed(123)
+
+#train the model SVM
+SVMmodel <- train(brand ~ salary + age,
+                                    data = training,
+                                    method = "svmLinear",
+                                    preProc = c("center", "scale"),
+                                    tuneLength = 2,
+                                    trControl = crossV)
+
+#ver métricas
+SVMmodel
+
+#resultado
+#Accuracy: 0.6217673
+#Kappa: 0
+
+#o resultado é o mesmo
+
+#predictions com o test
+Predi_Test_SVMmodel <- predict(SVMmodel, testing)
+
+#ver a accuracy no test
+confusionMatrix(testing$brand, Predi_Test_SVMmodel)
+
+#resultado
+#Accuracy: 0.6217
+#Kappa: 0            
+
+#resultado muito ruim para SVM
+
+######
+
+#agora vou treinar-NN
+
+#set seed
+set.seed(123)
+
+#fazer o grid manualmente para o k-NN
+neighbor <- expand.grid(k = c(1, 3, 9, 12))
+
+#train the model k-NN
+KNNmodel <- train(brand ~ salary + age,
+                                    data = training,
+                                    method = "knn",
+                                    preProc = c("center", "scale"),
+                                    tuneGrid = neighbor,
+                                    trControl = crossV)
+
+#métricas
+KNNmodel
+
+#k  Accuracy   Kappa    
+#1  0.8963487  0.7795040
+#3  0.9086202  0.8058066
+#9  0.9152612  0.8202159
+#12 0.9158534  0.8214452  (melhor métrica)
+
+#agora vou testar com o tune automático
+
+#set.seed
+set.seed(123)
+
+#train the model k-NN
+KNNmodel <- train(brand ~ salary + age,
+                                    data = training,
+                                    method = "knn",
+                                    preProc = c("center", "scale"),
+                                    tuneLength = 3,
+                                    trControl = crossV)
+
+#métricas
+KNNmodel
+#k  Accuracy   Kappa    
+#5  0.9121897  0.8135519
+#7  0.9153150  0.8202593
+#9  0.9152747  0.8202457
+
+#12 é a melhor métrica, então vai ser a que eu vou usar. vou treinar o modelo com 12
+#para poder fazer as predictions
+
+#set seed
+set.seed(123)
+
+#fazer o grid manualmente para o k-NN
+neighbor <- expand.grid(k = 12)
+
+#train the model k-NN
+KNNmodel <- train(brand ~ salary + age,
+                                    data = training,
+                                    method = "knn",
+                                    preProc = c("center", "scale"),
+                                    tuneGrid = neighbor,
+                                    trControl = crossV)
+
+#métrica
+#Accuracy : 0.9153819 
+#Kappa : 0.8204282 
+
+#agora vou testar o modelo
+
+#predictions com o test
+Predi_Test_KNNmodel <- predict(KNNmodel, testing)
+
+#ver a accuracy no test
+confusionMatrix(testing$brand, Predi_Test_KNNmodel)
+
+#métricas
+#Accuracy: 0.9256          
+#Kappa: 0.8425       
+
+######
+
+#vou treinar SVM Radial
+
+#set seed
+set.seed(123)
+
+#train the model SVM Radial 
+SVMRAmodel <- train(brand ~ salary + age,
+                                    data = training,
+                                    method = "svmRadial",
+                                    preProc = c("center", "scale"),
+                                    tuneLength = 3,
+                                    trControl = crossV)
+
+#métricas
+#C     Accuracy   Kappa    
+#0.25  0.9202312  0.8305539
+#0.50  0.9218742  0.8340629
+#1.00  0.9227094  0.8360616
+
+#predictions com o test
+Predi_Test_SVMRAmodel <- predict(SVMRAmodel, testing)
+
+#ver a accuracy no test
+confusionMatrix(testing$brand, Predi_Test_SVMRAmodel)
+
+#métricas
+#Accuracy: 0.9232         
+#Kappa: 0.8376    
+
+####
+
+#plotar age x salary
+#quando você usa a função ggplot, você abre uma caixa em branco
+#por isso só coloca a função ggplot() e +, quando vc vai acrescentar
+#informações ao seu gráfico. voc6e usa um tipo de plot, que nesse 
+#caso foi o geom_jittter. Dentro dele, você vai colocar o dataset
+#que vai plotar (data = datasetname), a estética do gráfico, usando
+#a função aes, omde você vai colocar o que fica no eixo x, e o que
+#vai no eixo y. Você pode acrescentar um outro atributo na cor
+#dos pontos. 
+
+#criar gráfico que mostre a relaçao entre age e salary e que 
+#mostre a lable (brand) na cor dos pontos. É possível ver padrões
+ggplot() +
+  geom_jitter(data = survey, aes(x = age , y = salary,
+                                 color = brand))
+
+#para saber se o modelo é bom, entender onde estão os erros
+#criou a coluna errorCL no dataset testing. Transformou todos os
+#números em absoluto (lembrar a tabela que fez com o Pericles).
+#A brand do testing existe e diz a preferencia dos clientes. Você
+#subtrai essa coluna pelas predictions e transforma em números
+#absolutos (o mesmo que colocar módulo). Considerar que tudo que
+#for zero é acerto e tudo que for 1 é erro. Transformar em
+#numérico para fazer a subtração
+testing$errorCL <- abs(as.numeric(testing$brand) - as.numeric(Predi_Test_SVMRAmodel))
+
+#colocar a coluna errorCL (coluna gerada) como cor. Transformar
+#em fator
+ggplot() +
+  geom_jitter(data = testing, aes(x = age , y = salary,
+                                 color = as.factor(errorCL)))
+
+#####
+
+#treinar pode 
+
+#set.seed
+set.seed(123)
+
+#train the model k-NN com todos os atributos
+KNNmodelAA <- train(brand ~ .,
+                                    data = training,
+                                    method = "knn",
+                                    preProc = c("center", "scale"),
+                                    tuneLength = 3,
+                                    trControl = crossV)
+
+#ver métricas
+#k  Accuracy   Kappa     
+#5  0.5504151  0.02176416
+#7  0.5626870  0.03049594
+#9  0.5765074  0.04709475
+
+#predictions com o test
+Predi_Test_KNNmodelAA <- predict(KNNmodelAA, testing)
+
+#ver a accuracy no test
+confusionMatrix(testing$brand, Predi_Test_KNNmodelAA)
+
+#métricas
+#Accuracy : 0.5974  
+#Kappa : 0.0961 
+
+#encontrar erros
+testing$colunaError <- abs(as.numeric(testing$brand) - as.numeric(Predi_Test_KNNmodelAA))
+
+#colocar a coluna errorCL (coluna gerada) como cor. Transformar
+#em fator
+ggplot() +
+  geom_jitter(data = testing, aes(x = age , y = salary,
+                                 color = as.factor(colunaError)))
+
+#tá errando muito, mas principalmente o que é accer
+
+####
+
+#dei um run no knn (k=12) com salary e age e vou fazer o gráfico
+testing$colError <- abs(as.numeric(testing$brand) - as.numeric(Predi_Test_KNNmodel))
+
+#colocar a coluna colError (coluna gerada) como cor
+ggplot() +
+  geom_jitter(data = testing, aes(x = age , y = salary,
+                                 color = as.factor(colError)))
