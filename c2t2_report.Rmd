@@ -1,0 +1,34 @@
+---
+title: "Investigate Customer Buying Patterns"
+author: "Letícia Marçal"
+date: "2019-10-13"
+output: html_document
+---
+
+
+**Costumer preferences: Acer or Sony**
+---
+
+We have a 14,898-line dataset about consumer characteristics. One of the attributes of the set was whether the customer prefers **Acer** or **Sony** brand. The dataset, however, had 5,000 missing values about the brand customers prefer. The purpose of this project was to predict these 5,000 pieces of information. The result was as follows:
+
+38.3% (1,915) prefer **Acer**
+
+61,7% (3,085) prefer **Sony**
+
+When we gather all the information (9,898 lines of existing information plus the 5,000 lines predicted), we get the following result: 
+
+38% (5,659) prefer **Acer**
+
+62% (9,239) prefer **Sony**
+
+
+
+**Background**
+---
+
+The dataset consists of 7 attributes. Two of them were chosen: **age** and **salary**. After testing all the features, these two best built a model that could find patterns and summarize the reality of consumers.
+
+```{r plot important attributes, echo=FALSE}
+![Caption for the picture.](C:/Users/letic/Documents/UbiqumR/Course2_task2/plot_varImp_C5treeModel. jpeg)
+``` 
+

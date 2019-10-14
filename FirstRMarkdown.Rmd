@@ -1,0 +1,29 @@
+title: "Investigate Customer Buying Patterns"
+author: "Leticia Russo"
+date: "2019-10-13"
+output: html_document
+
+library("ggplot2")
+
+#This is a header
+
+I'm a paragraph, hi! I can do cool thinks like:
+
+* *Be in italics*
+* Be **Bold**
+* Or be ~~wrong~~
+
+#ler arquivo
+blackwell <- read.csv("C:/Users/letic/Desktop/Blackwell_Hist_Sample.csv")
+
+#entender data
+summary(blackwell)
+
+The blackwell dataset has `99 nrow(blackwell_data)` observations
+
+{r echo=FALSE}
+
+#criar chart
+plot(blackwell_data$in.store)
+
+
